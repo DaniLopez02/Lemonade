@@ -5,12 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    Limonada()
                 }
             }
         }
@@ -50,43 +57,85 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LemonadeApp(modifier: Modifier = Modifier){
-    val contador by remember{ mutableStateOf(0) }
-
-    Column(
+fun Limonada() {
+    Surface(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text(
-            text = "Lemonade",
+        //Cabecera
+        Box(
             modifier = Modifier
-                .height(80.dp)
                 .fillMaxSize()
-                .fillMaxHeight()
-                .background(Color(249, 228, 75))
-                .padding(top = 20.dp),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(250.dp))
-        Image(
-            painter = painterResource(id = R.drawable.lemon_tree),
-            contentDescription = "1",
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(195, 236, 210))
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Tap the lemon tree to select a lemon")
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(Color(221, 223, 87))
+            )
+            {
+                Text(
+                    text = stringResource(R.string.lemonadeTitle),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.Center)
+                        .padding(top = 40.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            }
+        }
+
+        var result by remember { mutableStateOf(1) }
+        var aleatorio by remember { mutableStateOf(2) }
+        val imagen = when (result){
+            1-> R.drawable.lemon_tree
+            2-> R.drawable.lemon_squeeze
+            3-> R.drawable.lemon_drink
+            else -> R.drawable.lemon_restart
+        }
+        val descripcionImagen = when (result){
+            1-> R.string.lemon_tree
+            2-> R.string.lemon_squeeze
+            3-> R.string.glass_of_lemonade
+            else -> R.string.empty_glass
+        }
+        val texto = when (result){
+            1-> R.string.TapLemon
+            2-> R.string.keep_tapping
+            3-> R.string.tap_the_empty
+            else -> R.string.tap_the_empty
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Image(
+                painter = painterResource(id = imagen),
+                contentDescription = stringResource(descripcionImagen),
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(137, 191, 224 ))
+                    .clickable{
+                        if(result == 1){aleatorio= (2..4).random();result++}
+                        else if(result == 2){ aleatorio--; if(aleatorio==0){result++} }
+                        else if(result==4){ result=1 }
+                        else{ result++ }
+                    }
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(text = stringResource(texto))
+        }
+
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     LemonadeTheme {
-        LemonadeApp()
+        Limonada()
     }
 }
